@@ -44,8 +44,8 @@ Follow these steps to set up and run the project:
 ### 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/Nilak14/express-ts-starter.git
+cd express-ts-starter
 ```
 
 ### 2. **Install dependencies**
