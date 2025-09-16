@@ -64,11 +64,11 @@ app.use("/api/v1", v1Routes);
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof ApiError) {
-    ApiError.handle(err, res);
+    return ApiError.handle(err, res);
   }
 
   if (config.NODE_ENV === "development") {
-    res.status(500).send({
+    return res.status(500).send({
       message: err.message,
       stack: err.stack,
     });

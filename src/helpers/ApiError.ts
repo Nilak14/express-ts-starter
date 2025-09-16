@@ -1,3 +1,4 @@
+import { logger } from "@/lib/winston";
 import { Response } from "express";
 
 export enum ErrorType {
@@ -9,6 +10,7 @@ export enum ErrorType {
   TOKEN_EXPIRED = "TokenExpired",
   BAD_TOKEN = "BadToken",
   ACCESS_TOKEN_ERROR = "AccessTokenError",
+  VALIDATION_ERROR = "ValidationError",
 }
 
 export class ApiError extends Error {
@@ -22,6 +24,7 @@ export class ApiError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
   static handle(err: ApiError, res: Response) {
+    logger.error("Error in ApiError", err);
     res.status(err.statusCode || 500).json({
       success: false,
       type: err.type || ErrorType.INTERNAL_SERVER_ERROR,

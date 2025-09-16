@@ -41,3 +41,8 @@ export class AccessTokenError extends ApiError {
     super(ErrorType.ACCESS_TOKEN_ERROR, 401, message);
   }
 }
+export class ValidationError extends ApiError {
+  constructor(message: string = "Validation Error") {
+    super(ErrorType.VALIDATION_ERROR, 400, message);
+  }
+}

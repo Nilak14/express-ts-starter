@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 // Routes Import
-import helloRoute from "@/routes/v1/hello.route";
+import authRoute from "@/routes/v1/auth.route";
 
 const router = Router();
 
@@ -16,6 +16,7 @@ router.get("/", (req, res) => {
   });
 });
 
-// Routes
-router.use("/hello", helloRoute);
+// V1 Routes
+
+router.use("/auth", authRoute);
 export default router;
