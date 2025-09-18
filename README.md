@@ -19,6 +19,7 @@ This template comes pre-configured with essential features like API versioning, 
 * **Custom ApiError Handler** – Centralized, typed API errors and consistent error responses.
 * **Async handler** – `asyncHandler` to avoid repetitive `try/catch` blocks in controllers.
 * **Zod Validation Middleware** – Request validation using Zod schemas and consistent validation errors.
+* **Swagger API Documentation** – Auto-generated interactive API docs with JWT authentication support.
 
 ---
 
@@ -26,10 +27,10 @@ This template comes pre-configured with essential features like API versioning, 
 
 ```
 ├── src
-│   ├── controllers   # API controllers (business logic)
+│   ├── controllers   # API controllers (business logic) with Swagger JSDoc
 │   ├── middlewares   # Custom middlewares for Express
 │   ├── helpers       # Helper Functions
-│   ├── routes        # API route definitions
+│   ├── routes        # API route definitions + Swagger setup
 │   ├── lib           # Core utilities and reusable modules 
 │   ├── zodSchema     # Schemas for validator 
 │   ├── config.ts     # Environment configuration setup
@@ -101,6 +102,22 @@ http://localhost:<PORT>/api/v1
 }
 ```
 
+### **Swagger API Documentation**
+
+Interactive API documentation is available at:
+
+**URL:**
+
+```
+http://localhost:<PORT>/api/v1/docs
+```
+
+The Swagger UI provides:
+- **Interactive API testing** – Test endpoints directly from the browser
+- **JWT Authentication** – Authorize requests using Bearer tokens
+- **Auto-generated schemas** – Request/response models from JSDoc comments
+- **Complete API reference** – All endpoints with detailed descriptions
+
 ---
 
 ## 🔁 Auth — Login (Test route)
@@ -132,7 +149,7 @@ HTTP/1.1 201 OK
   "data": {
       "user": {
           "email":"user@example.com",
-          "password":"yourPassword123",
+         
     },
   }
 }
@@ -332,3 +349,31 @@ If you face any issues or have suggestions, reach out to the developer:
 * Use the `asyncHandler` wrapper for all async controllers to automatically forward errors to the global error handler.
 * Use `validate(schema)` middleware for request body validation using Zod. When validation fails, throw `new ValidationError(...)` so it is handled consistently.
 * The example `POST /api/v1/auth/login` route is provided to test validation and error formatting. Send a malformed request (e.g. missing `password`) to confirm validation errors are returned in the `ApiError` format.
+
+### 📚 Swagger Documentation
+
+* **Auto-generated docs** – Swagger scans JSDoc comments in `./src/controller/v1/*.controller.ts` files to generate API documentation.
+* **JWT Authentication** – Swagger UI includes Bearer token authentication for testing protected endpoints.
+* **Schema definitions** – Define request/response schemas using JSDoc `@swagger` comments in your controllers.
+* **Interactive testing** – Test your APIs directly from the Swagger UI at `/api/v1/docs`.
+
+**Example JSDoc for Swagger:**
+```ts
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *  post:
+ *    tags:
+ *      - Auth
+ *    summary: Login a User
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Login'
+ *    responses:
+ *      201:
+ *        description: User logged in successfully
+ */
+```
