@@ -9,7 +9,7 @@ This template comes pre-configured with essential features like API versioning, 
 ```bash
 git clone -b prisma-postgres https://github.com/Nilak14/express-ts-starter.git
 ```
-Clone mongo setuo
+Clone mongo setup
 ```bash
 https://github.com/Nilak14/express-ts-starter.git
 ```
