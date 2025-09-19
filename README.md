@@ -5,6 +5,15 @@ This template comes pre-configured with essential features like API versioning, 
 
 > **Note:** The main branch contains Express + MongoDB setup. This `prisma-postgres` branch uses Prisma ORM with PostgreSQL for modern type-safe database operations.
 
+ Clone prisma setup 
+```bash
+git clone -b prisma-postgres https://github.com/Nilak14/express-ts-starter.git
+```
+Clone mongo setuo
+```bash
+https://github.com/Nilak14/express-ts-starter.git
+```
+
 ---
 
 ## ✨ Features
