@@ -3,6 +3,8 @@
 A **production-ready boilerplate** for quickly setting up an **Express.js** application with **TypeScript** and **MongoDB (Mongoose)**.
 This template comes pre-configured with essential features like API versioning, rate limiting, logging, and much more — helping you focus on building features instead of boilerplate setup.
 
+> **Note:** The main branch contains Express + MongoDB setup. This `prisma-postgres` branch uses Prisma ORM with PostgreSQL for modern type-safe database operations.
+
 ---
 
 ## ✨ Features
@@ -349,6 +351,9 @@ If you face any issues or have suggestions, reach out to the developer:
 * Use the `asyncHandler` wrapper for all async controllers to automatically forward errors to the global error handler.
 * Use `validate(schema)` middleware for request body validation using Zod. When validation fails, throw `new ValidationError(...)` so it is handled consistently.
 * The example `POST /api/v1/auth/login` route is provided to test validation and error formatting. Send a malformed request (e.g. missing `password`) to confirm validation errors are returned in the `ApiError` format.
+* ### Branch Information
+* **Main Branch**: Contains Express + MongoDB (Mongoose) setup
+* **Current Branch** (`prisma-postgres`): Uses Prisma ORM with PostgreSQL for modern, type-safe database operations
 
 ### 📚 Swagger Documentation
 
