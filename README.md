@@ -1,7 +1,9 @@
-# 🚀 Express + TypeScript + Mongoose Starter Template
+# 🚀 Express + TypeScript + Prisma + PostgreSQL Starter Template
 
-A **production-ready boilerplate** for quickly setting up an **Express.js** application with **TypeScript** and **MongoDB (Mongoose)**.
-This template comes pre-configured with essential features like API versioning, rate limiting, logging, and much more — helping you focus on building features instead of boilerplate setup.
+A **production-ready boilerplate** for quickly setting up an **Express.js** application with **TypeScript**, **Prisma ORM**, and **PostgreSQL**.
+This template comes pre-configured with essential features like API versioning, rate limiting, logging, database migrations, and much more — helping you focus on building features instead of boilerplate setup.
+
+> **Note:** The main branch contains Express + MongoDB setup. This `prisma-postgres` branch uses Prisma ORM with PostgreSQL for modern type-safe database operations.
 
 ---
 
@@ -13,7 +15,9 @@ This template comes pre-configured with essential features like API versioning, 
 * **Logging with Winston** – Structured and production-ready logs (winston configured in `src/lib/winston`).
 * **Prettier Integration** – Clean and consistent code formatting.
 * **Path Aliases (`@` imports)** – Simplify import paths for better code organization.
-* **MongoDB with Mongoose** – Built-in database setup for quick development.
+* **PostgreSQL with Prisma ORM** – Type-safe database operations with auto-generated client and migrations.
+* **Database Migrations** – Version-controlled schema changes with Prisma migrations.
+* **Prisma Studio** – Visual database browser for development.
 * **Apache License 2.0** – Open-source friendly.
 * **Nodemon** – Auto-restart development server for faster development.
 * **Custom ApiError Handler** – Centralized, typed API errors and consistent error responses.
@@ -31,10 +35,14 @@ This template comes pre-configured with essential features like API versioning, 
 │   ├── middlewares   # Custom middlewares for Express
 │   ├── helpers       # Helper Functions
 │   ├── routes        # API route definitions + Swagger setup
-│   ├── lib           # Core utilities and reusable modules 
+│   ├── lib           # Core utilities (winston, prisma, rate limiting)
+│   ├── generated     # Auto-generated Prisma client
 │   ├── zodSchema     # Schemas for validator 
 │   ├── config.ts     # Environment configuration setup
 │   └── server.ts     # Application entry point
+├── prisma
+│   ├── schema.prisma # Database schema definition
+│   └── migrations    # Database migration files
 ├── .env.sample       # Sample environment variables
 ├── package.json
 ├── .prettierrc       # Prettier configuration
@@ -62,16 +70,30 @@ npm install
 
 ### 3. **Setup environment variables**
 
-Create a `.env` file in the **root directory**. Use `.env.sample` as a reference and add your own credentials (MongoDB URI, port, etc.). Common variables used by this template:
+Create a `.env` file in the **root directory**. Use `.env.sample` as a reference and add your own credentials (PostgreSQL connection string, port, etc.). Common variables used by this template:
 
 ```
 PORT=3000
-MONGO_URI=mongodb://localhost:27017/dbname
-CORS_ORIGIN=http://localhost:3000
+DATABASE_URL=postgresql://username:password@localhost:5432/dbname
 NODE_ENV=development
 ```
+> **Note:** Visit the `.config.ts` file also for more configuration.
+### 4. **Setup Database**
 
-### 4. **Run the development server**
+Initialize Prisma and run migrations:
+
+```bash
+# Generate Prisma client
+npm run db:generate
+
+# Run database migrations
+npm run db:migrate init
+
+# (Optional) Open Prisma Studio to view your database
+npm run db:view
+```
+
+### 5. **Run the development server**
 
 ```bash
 npm run dev
@@ -120,18 +142,34 @@ The Swagger UI provides:
 
 ---
 
-## 🔁 Auth — Login (Test route)
+## 🔁 Auth — Register & Login (Test routes)
 
-A sample POST route is provided to test request validation and error handling:
+Sample auth routes are provided to test Prisma operations, request validation, and error handling:
+
+### Register Endpoint
 
 **Endpoint:**
+```
+POST /api/v1/auth/register
+```
 
+**Required JSON body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "yourPassword123",
+  "fullName": "John Doe"
+}
+```
+
+### Login Endpoint
+
+**Endpoint:**
 ```
 POST /api/v1/auth/login
 ```
 
 **Required JSON body:**
-
 ```json
 {
   "email": "user@example.com",
@@ -139,18 +177,39 @@ POST /api/v1/auth/login
 }
 ```
 
-### Example — Successful Response
+### Example — Successful Login Response
 
 ```json
 HTTP/1.1 201 OK
 {
   "success": true,
-  "message": "Logged in successfully",
+  "message": "User logged in successfully",
   "data": {
-      "user": {
-          "email":"user@example.com",
-         
-    },
+    "user": {
+      "email": "user@example.com",
+      "fullName": "John Doe",
+      "role": "USER"
+    }
+  }
+}
+```
+
+### Example — Successful Register Response
+
+```json
+HTTP/1.1 201 OK
+{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "user": {
+      "id": "uuid-string",
+      "email": "user@example.com",
+      "fullName": "John Doe",
+      "role": "USER",
+      "createdAt": "2025-09-19T10:30:00.000Z",
+      "updatedAt": "2025-09-19T10:30:00.000Z"
+    }
   }
 }
 ```
@@ -283,11 +342,51 @@ export default validateRequest;
 
 ## 🔧 Scripts
 
-| Script          | Description                                    |
-| --------------- | ---------------------------------------------- |
-| `npm run dev`   | Run the server in development with **Nodemon** |
-| `npm run build` | Build the project for production               |
-| `npm start`     | Run the production build                       |
+| Script                | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `npm run dev`         | Run the server in development with **Nodemon** |
+| `npm run build`       | Build the project for production               |
+| `npm start`           | Run the production build                       |
+| `npm run db:generate` | Generate Prisma client from schema             |
+| `npm run db:migrate`  | Run Prisma migrations (append migration name)  |
+| `npm run db:view`     | Open Prisma Studio to view/edit database       |
+
+### Prisma Scripts Explained
+
+- **`db:generate`** - Generates the Prisma client based on your `schema.prisma`. Run this after any schema changes.
+- **`db:migrate`** - Creates and applies database migrations. Usage: `npm run db:migrate add_user_table`
+- **`db:view`** - Opens Prisma Studio (visual database browser) at `http://localhost:5555`
+
+---
+
+## 🗄️ Database Schema
+
+The current Prisma schema includes a `User` model with the following structure:
+
+```prisma
+model User {
+  id        String    @id @default(uuid())
+  fullName  String
+  email     String    @unique
+  password  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?  // Soft delete support
+  role      Role      @default(USER)
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+```
+
+### Key Features:
+- **UUID Primary Keys** - Uses UUIDs instead of auto-incrementing integers
+- **Soft Deletes** - `deletedAt` field for safe record deletion
+- **Role-based Access** - ADMIN/USER roles with enum type safety
+- **Timestamps** - Automatic `createdAt` and `updatedAt` tracking
+- **Type Safety** - Full TypeScript integration with auto-generated types
 
 ---
 
@@ -300,12 +399,18 @@ export default validateRequest;
 
 ## 📝 Environment Variables
 
-| Variable      | Description                              |
-| ------------- | ---------------------------------------- |
-| `PORT`        | Port where the app runs                  |
-| `MONGO_URI`   | MongoDB connection string                |
-| `CORS_ORIGIN` | Allowed CORS origin(s) (comma-separated) |
-| `NODE_ENV`    | environment (development/production)     |
+| Variable       | Description                              |
+| -------------- | ---------------------------------------- |
+| `PORT`         | Port where the app runs                  |
+| `DATABASE_URL` | PostgreSQL connection string             |
+| `CORS_ORIGIN`  | Allowed CORS origin(s) (comma-separated) |
+| `NODE_ENV`     | environment (development/production)     |
+
+### PostgreSQL Connection String Format
+
+```
+DATABASE_URL="postgresql://username:password@localhost:5432/database_name?schema=public"
+```
 
 Refer to `.env.sample` for details.
 
@@ -315,10 +420,12 @@ Refer to `.env.sample` for details.
 
 If you encounter issues:
 
-* Double-check your `.env` file configuration.
-* Ensure MongoDB is running and accessible.
+* Double-check your `.env` file configuration (especially `DATABASE_URL`).
+* Ensure PostgreSQL is running and accessible.
+* Run `npm run db:generate` after any schema changes.
 * Check logs for errors (Winston logger will display them clearly).
 * Confirm Zod schemas match the request payload structure.
+* If database connection fails, verify PostgreSQL service is running.
 * If the issue persists, **contact the developer**.
 
 ---
@@ -345,10 +452,21 @@ If you face any issues or have suggestions, reach out to the developer:
 
 ## 🗒️ Notes / Implementation details
 
-* The `ApiError` base class and derived errors you shared are used by the global error handler to return consistent errors. Keep the `ApiError.handle(err, res)` call inside your global `errorHandler` middleware.
+### Database & ORM
+* **Prisma Client** is auto-generated in `src/generated/prisma` and imported from `@/generated/prisma`.
+* **Type Safety** - All database operations are fully typed with TypeScript.
+* **Migrations** - Database schema changes are version-controlled through Prisma migrations.
+* **User Model** includes UUID primary key, soft deletes (`deletedAt`), and role-based access.
+
+### Error Handling & Validation
+* The `ApiError` base class and derived errors are used by the global error handler to return consistent errors.
 * Use the `asyncHandler` wrapper for all async controllers to automatically forward errors to the global error handler.
 * Use `validate(schema)` middleware for request body validation using Zod. When validation fails, throw `new ValidationError(...)` so it is handled consistently.
-* The example `POST /api/v1/auth/login` route is provided to test validation and error formatting. Send a malformed request (e.g. missing `password`) to confirm validation errors are returned in the `ApiError` format.
+* The example auth routes (`/register` and `/login`) are provided to test Prisma operations, validation, and error formatting.
+
+### Branch Information
+* **Main Branch**: Contains Express + MongoDB (Mongoose) setup
+* **Current Branch** (`prisma-postgres`): Uses Prisma ORM with PostgreSQL for modern, type-safe database operations
 
 ### 📚 Swagger Documentation
 

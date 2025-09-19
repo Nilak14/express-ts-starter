@@ -1,5 +1,6 @@
 import app from "./app";
 import config from "./config";
+import prisma from "./lib/prisma";
 
 import { logger } from "./lib/winston";
 
@@ -29,7 +30,7 @@ import { logger } from "./lib/winston";
 
 const handleServerShutdown = async () => {
   try {
-    // await disconnectFromDatabase();
+    await prisma.$disconnect();
     logger.warn("Server SHUTDOWN");
     process.exit(0);
   } catch (error) {
