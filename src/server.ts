@@ -1,11 +1,11 @@
 import app from "./app";
 import config from "./config";
-import { connectToDatabase, disconnectFromDatabase } from "./lib/mongoose";
+
 import { logger } from "./lib/winston";
 
 (async () => {
   try {
-    await connectToDatabase();
+    // await connectToDatabase();
 
     app.listen(config.PORT, () => {
       logger.info(`Server  running: http://localhost:${config.PORT}`);
@@ -29,7 +29,7 @@ import { logger } from "./lib/winston";
 
 const handleServerShutdown = async () => {
   try {
-    await disconnectFromDatabase();
+    // await disconnectFromDatabase();
     logger.warn("Server SHUTDOWN");
     process.exit(0);
   } catch (error) {

@@ -34,7 +34,6 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
-    "mongoose": "^8.18.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-model-validator": "^3.0.21",
     "swagger-ui-express": "^5.0.1",
